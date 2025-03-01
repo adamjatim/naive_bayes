@@ -10,6 +10,11 @@ class AuthController extends Controller
     // Tampilkan halaman login
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            // Redirect sesuai role jika sudah login
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -26,18 +31,19 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Redirect sesuai role user
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('pages.dashboard');
-            } else {
-                return redirect()->route('pages.dashboard');
-            }
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
             'email' => 'Email atau password tidak cocok.',
         ]);
     }
+
+    public function dashboard()
+    {
+        return view('pages.dashboard');
+    }
+
 
     // Proses logout
     public function logout(Request $request)

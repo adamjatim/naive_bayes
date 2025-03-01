@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\GuestMiddleware;
 use App\Http\Middleware\KaryawanMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Menambahkan middleware Admin dan Karyawan
         $middleware->alias([
+            'guest' => GuestMiddleware::class,
             'admin' => AdminMiddleware::class,
             'karyawan' => KaryawanMiddleware::class,
         ]);
