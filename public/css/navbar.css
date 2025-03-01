@@ -1,0 +1,10 @@
+@media (max-width: 768px) {
+    #dropdownNavbar,
+    #dropdownSettings {
+        position: relative !important;
+        inset: unset !important;
+        margin: unset !important;
+        transform: none !important;
+        width: auto;
+    }
+}
