@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naive Bayes - @yield('title')</title>
-    {{-- @vite('resources/css/app.css') --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
 </head>
 
 <body>
-    @auth
-        @include('layout.navbar')
-    @endauth
+    <div class="flex flex-col min-h-screen">
+        @if (Auth::check())
+            @include('layout.navbar')
+        @endif
 
-    <div class="flex flex-col  min-h-screen">
         @yield('content')
 
         @include('layout.footer')
