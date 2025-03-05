@@ -19,6 +19,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
+    Route::prefix('/profile')->name('profile.')->group(function() {
+        Route::get('/', function() {
+            return view('pages.profile.index');
+        })->name('index');
+    });
+
     // Route khusus admin
     Route::middleware(['admin'])->group(function () {
         // Route::get('/admin/dashboard', function () {
