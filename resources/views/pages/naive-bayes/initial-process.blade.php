@@ -16,7 +16,7 @@
         <div class="flex flex-col m-6">
             <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg overflow-x-scroll ">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
+                    <thead class="bg-white">
                         <tr>
                             <th scope="col"
                                 class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
@@ -108,105 +108,105 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
                         <tr>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">1</td>
+                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-yellow-100">1</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">41</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">41</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Sedang</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Sedang</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Ada</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Ada</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Rendah</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Rendah</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Tidak Ada Asuransi</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Tidak Ada Asuransi</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Mobil Pribadi</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Mobil Pribadi</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Air Ledeng</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Air Ledeng</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jamban Keluarga</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Jamban Keluarga</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Menumpang</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Menumpang</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Semen</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Semen</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Batu Bata</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Batu Bata</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Kecil</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Kecil</td>
 
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-blue-100">
                                 <h2 class="font-medium text-gray-800 dark:text-white text-right">Penerima</h2>
                             </td>
 
                         </tr>
 
                         <tr>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">2</td>
+                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-yellow-100">2</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">41</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">41</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Sedang</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Sedang</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Ada</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Ada</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Rendah</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Rendah</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Tidak Ada Asuransi</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Tidak Ada Asuransi</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Mobil Pribadi</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Mobil Pribadi</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Air Ledeng</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Air Ledeng</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jamban Keluarga</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Jamban Keluarga</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Menumpang</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Menumpang</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Semen</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Semen</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Batu Bata</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Batu Bata</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Kecil</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Kecil</td>
 
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-blue-100">
                                 <h2 class="font-medium text-gray-800 dark:text-white text-right">Penerima</h2>
                             </td>
 
                         </tr>
 
                         <tr>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">3</td>
+                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-yellow-100">3</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">41</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">41</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Sedang</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Sedang</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Ada</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Ada</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Rendah</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Rendah</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Tidak Ada Asuransi</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Tidak Ada Asuransi</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Mobil Pribadi</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Mobil Pribadi</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Air Ledeng</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Air Ledeng</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jamban Keluarga</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Jamban Keluarga</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Menumpang</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Menumpang</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Semen</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Semen</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Batu Bata</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Batu Bata</td>
 
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Kecil</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Kecil</td>
 
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-blue-100">
                                 <h2 class="font-medium text-gray-800 dark:text-white text-right">Penerima</h2>
                             </td>
 
