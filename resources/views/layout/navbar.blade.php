@@ -135,7 +135,7 @@
                         class="hidden font-normal divide-y rounded-lg shadow-sm w-44 bg-gray-700 divide-gray-600">
                         <ul class="py-2 text-sm  text-gray-200" aria-labelledby="dropdownLargeButton">
                             <li>
-                                <a href="#"
+                                <a href="{{ route('profile.index') }}"
                                     class="flex flex-row justify-between  px-4 py-2 hover:bg-gray-600 hover:text-white">
                                     <span>Profile</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
