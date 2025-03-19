@@ -24,6 +24,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function scopeKaryawan($query)
+    {
+        return $query->where('role', 'karyawan');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
