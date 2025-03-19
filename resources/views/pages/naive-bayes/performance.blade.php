@@ -16,7 +16,7 @@
     <main class="bg-gray-100 flex-grow ">
         <div class="mx-6 mt-2">
             <div>Prosentase Data Training</div>
-            <select class="w-2/5" name="cars" id="cars">
+            <select class="w-2/5 border-gray-200 rounded-md" name="cars" id="cars">
                 <option value="">-- persentase --</option>
                 <option value="10">10%</option>
                 <option value="20">20%</option>
@@ -31,7 +31,7 @@
         </div>
 
         <div class="flex flex-col m-6">
-            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg overflow-x-scroll ">
+            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-scroll ">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
                     <thead class="bg-white">
                         <tr>

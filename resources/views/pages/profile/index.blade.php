@@ -30,7 +30,10 @@
                 </div>
 
                 <div class="mt-5 md:mt-0 md:col-span-2">
-                    <form >
+                    <form action="{{ route('profile.edit', Crypt::encrypt(Auth::user()->id) ) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
                         <div class="px-4 py-5 bg-white sm:p-6 shadow sm:rounded-tl-md sm:rounded-tr-md">
                             <div class="grid grid-cols-6 gap-6">
 
@@ -41,7 +44,8 @@
                                     </label>
                                     <input
                                         class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 block w-full"
-                                        id="name" type="text" autocomplete="name" value="{{ Auth::user()->name }}">
+                                        {{-- id="name" type="text" autocomplete="name" value="{{ Auth::user()->name }}" --}}
+                                        id="name" name="name" type="text" autocomplete="name" value="{{ old('name', Auth::user()->name) }}">
                                 </div>
 
                                 {{-- Email --}}
@@ -51,7 +55,8 @@
                                     </label>
                                     <input
                                         class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 block w-full"
-                                        id="email" type="email" value="{{ Auth::user()->email }}">
+                                        {{-- id="email" type="email" value="{{ Auth::user()->email }}" --}}
+                                        id="email" name="email" type="email" value="{{ old('email', Auth::user()->email) }}">
 
                                 </div>
                             </div>

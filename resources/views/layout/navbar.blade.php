@@ -37,7 +37,7 @@
                     </a>
                 </li>
                 @if (Auth::user()->role == 'admin')
-                    <li class="relative">
+                    <li>
                         <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
                             class="flex flex-row md:gap-1 justify-between py-2 px-3 text-white rounded-sm md:p-0 md:hover:text-blue-300 items-center w-full
                         @if (Route::is('naive-bayes.*')) md:border-b-blue-500 md:border-b-2 md:bg-transparent bg-blue-600
@@ -59,7 +59,7 @@
                             class="hidden absolute font-normal divide-y rounded-lg shadow-sm w-44 bg-gray-700 divide-gray-600">
                             <ul class="py-2 text-sm  text-gray-200" aria-labelledby="dropdownLargeButton">
                                 <li>
-                                    <a href="{{ route('naive-bayes.dataset') }}"
+                                    <a href="{{ route('naive-bayes.dataset.index') }}"
                                         class="flex flex-row justify-between px-4 py-2 hover:bg-gray-600 hover:text-white">
                                         <span>Dataset</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -114,7 +114,7 @@
                         </div>
                     </li>
                 @endif
-                <li class="relative">
+                <li>
                     <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownSettings"
                         class="flex flex-row md:gap-1 justify-between py-2 px-3 text-white rounded-sm md:p-0 md:hover:text-blue-300 items-center w-full
                         @if (Route::is('profile.*') || Route::is('karyawan.*')) md:border-b-blue-500 md:border-b-2 md:bg-transparent bg-blue-600

@@ -15,205 +15,75 @@
     <main class="bg-gray-100 flex-grow ">
         <div class="flex flex-col m-6">
             <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg overflow-x-scroll ">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
-                    <thead class="bg-white">
-                        <tr>
-                            <th scope="col"
-                                class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>No</span>
-                            </th>
-
-                            <th scope="col"
-                                class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Usia</span>
-                            </th>
-
-                            <th scope="col"
-                                class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Jumlah Tanggungan Kepala Keluarga</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Lansia</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Anak Wajib Sekolah</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Penghasilan Kepala Keluarga</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Status BPJS Anggota Keluarga</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Tipe Kendaraan</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Sumber Air Bersih</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Tipe Jamban</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Status Kepemilikan Bangunan</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Bahan Dasar Lantai</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Bahan Dasar Dinding</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                <span>Kategori Luas Bangunan</span>
-                            </th>
-
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-right text-gray-500 dark:text-gray-400">
-                                <span>KETERANGAN</span>
-                            </th>
-                        </tr>
-
-                        <tr class="border-y">
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400 border-e" colspan="14">
-                                <span>-- Atribut Pendukung --</span>
-                            </th>
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-center text-nowrap text-gray-500 dark:text-gray-400  border-s">
-                                <span>-- Label Target --</span>
-                            </th>
-                        </tr>
-
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                        <tr>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-yellow-100">1</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">41</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Sedang</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Rendah</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Tidak Ada Asuransi</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Mobil Pribadi</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Air Ledeng</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Jamban Keluarga</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Menumpang</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Semen</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Batu Bata</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Kecil</td>
-
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-blue-100">
-                                <h2 class="font-medium text-gray-800 dark:text-white text-right">Penerima</h2>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-yellow-100">2</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">41</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Sedang</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Rendah</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Tidak Ada Asuransi</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Mobil Pribadi</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Air Ledeng</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Jamban Keluarga</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Menumpang</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Semen</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Batu Bata</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Kecil</td>
-
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-blue-100">
-                                <h2 class="font-medium text-gray-800 dark:text-white text-right">Penerima</h2>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-yellow-100">3</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">41</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Sedang</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Ada</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Rendah</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Tidak Ada Asuransi</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Mobil Pribadi</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Air Ledeng</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Jamban Keluarga</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Menumpang</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Semen</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Batu Bata</td>
-
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  bg-yellow-100">Kecil</td>
-
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap  bg-blue-100">
-                                <h2 class="font-medium text-gray-800 dark:text-white text-right">Penerima</h2>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-                </table>
+                @if ($importedData->isEmpty())
+                    {{-- Tampilkan pesan jika data kosong --}}
+                    <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+                        <p>Tidak ada data yang diimport.</p>
+                    </div>
+                @else
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
+                        <thead class="bg-white">
+                            <tr>
+                                @if ($importedData->isNotEmpty())
+                                    @foreach (json_decode($importedData->first()->row_data, true) as $key => $value)
+                                        <th scope="col"
+                                            class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400 text-center @if (count(json_decode($importedData->first()->row_data, true)) )
+
+                                            @else
+
+                                            @endif">
+                                            {{ $key }}
+                                        </th>
+                                    @endforeach
+                                @endif
+                            </tr>
+
+                            <tr class="border-y">
+                                <th scope="col"
+                                    class="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400 border-e"
+                                    colspan="{{ count(json_decode($importedData->first()->row_data, true)) - 1 }}">
+                                    <span>-- Atribut Pendukung --</span>
+                                </th>
+                                <th scope="col"
+                                    class="px-4 py-3.5 text-sm font-normal text-center text-nowrap text-gray-500 dark:text-gray-400 border-s">
+                                    <span>-- Label Target --</span>
+                                </th>
+                            </tr>
+
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
+                            @foreach ($importedData as $index => $data)
+                                <tr>
+                                    @php
+                                        $rowData = json_decode($data->row_data, true);
+                                        $totalColumns = count($rowData);
+                                        $currentColumn = 0;
+                                    @endphp
+
+                                    @foreach ($rowData as $key => $value)
+                                        @php
+                                            $currentColumn++;
+                                            $isLastColumn = $currentColumn === $totalColumns;
+                                        @endphp
+
+                                        <td
+                                            class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap
+                                            {{ $isLastColumn ? 'bg-yellow-100 text-center' : 'bg-blue-100' }}">
+                                            {{ $value }}
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+                    </table>
+
+                    {{-- Tampilkan navigasi pagination --}}
+                    <div class="mt-4">
+                        {{ $importedData->links() }}
+                    </div>
+
+                @endif
             </div>
         </div>
 
