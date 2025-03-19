@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DatasetController;
+use App\Http\Controllers\InitialProcessController;
 
 // Halaman login dan proses login
 Route::middleware(['guest'])->group(function () {
@@ -19,10 +23,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-    Route::prefix('/profile')->name('profile.')->group(function() {
-        Route::get('/', function() {
-            return view('pages.profile.index');
-        })->name('index');
+    Route::prefix('/profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::put('/edit/{id}', [ProfileController::class, 'update'])->name('edit');
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
     });
 
     // Route khusus admin
@@ -32,13 +37,12 @@ Route::middleware(['auth'])->group(function () {
         // })->name('admin.dashboard');
 
         Route::name('naive-bayes.')->group(function () {
-            Route::get('/dataset', function () {
-                return view('pages.naive-bayes.dataset');
-            })->name('dataset');
+            Route::prefix('/dataset')->name('dataset.')->group(function () {
+                Route::get('/', [DatasetController::class, 'index'])->name('index');
+                Route::post('/import', [DatasetController::class, 'import'])->name('import');
+            });
 
-            Route::get('/initialprocess', function () {
-                return view('pages.naive-bayes.initial-process');
-            })->name('initial-process');
+            Route::get('/initial-process', [InitialProcessController::class, 'index'])->name('initial-process');
 
             Route::get('/performance', function () {
                 return view('pages.naive-bayes.performance');
@@ -49,20 +53,28 @@ Route::middleware(['auth'])->group(function () {
             })->name('prediction');
         });
 
-        Route::prefix('/karyawan')->name('karyawan.')->group(function() {
-            Route::get('/', function () {
-                return view('pages.karyawan.index');
-            })->name('index');
+        Route::prefix('/karyawan')->name('karyawan.')->group(function () {
+            Route::get('/', [KaryawanController::class, 'index'])->name('index');
+            Route::post('/store', [KaryawanController::class, 'store'])->name('store');
+            Route::put('/update/{id}', [KaryawanController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [KaryawanController::class, 'destroy'])->name('delete');
             Route::get('/create', function () {
                 return view('pages.karyawan.create');
             })->name('create');
-            Route::get('/edit/{id}', function () {
-                return view('pages.karyawan.edit');
-            })->name('edit');
-            Route::get('/delete', function () {
-                return "Ini karyawan delete";
-            })->name('delete');
         });
+
+        // Route::prefix('/karyawan')->name('karyawan.')->group(function() {
+        //     Route::get('/', function () {
+        //         return view('pages.karyawan.index');
+        //     })->name('index');
+        //
+        //     Route::get('/edit/{id}', function () {
+        //         return view('pages.karyawan.edit');
+        //     })->name('edit');
+        //     Route::get('/delete', function () {
+        //         return "Ini karyawan delete";
+        //     })->name('delete');
+        // });
     });
 
     // Route khusus karyawan
