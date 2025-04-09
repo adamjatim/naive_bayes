@@ -30,9 +30,9 @@
             </button>
         </div>
 
-        <!-- resources/views/partials/upload-notification.blade.php -->
+        {{-- resources/views/partials/upload-notification.blade.php --}}
         @if (session('uploaded_files'))
-            <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg mx-4">
                 <h3 class="font-medium text-blue-800 mb-2">File yang berhasil di upload:</h3>
                 <ul class="list-disc list-inside space-y-1">
                     @foreach (session('uploaded_files') as $file)
@@ -120,7 +120,7 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400">XLS, or XLSX (Multiple files allowed)
                             </p>
                         </div>
-                        <div id="file-info" class="hidden p-4 overflow-x-scroll w-full">
+                        <div id="file-info" class="hidden p-4 overflow-y-scroll w-full">
                             <div class="flex flex-col gap-2" id="file-list"></div>
                         </div>
                         <input id="dropzone-file" type="file" name="files[]" accept=".csv, .xls, .xlsx" class="hidden"
