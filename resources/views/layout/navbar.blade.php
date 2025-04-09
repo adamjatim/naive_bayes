@@ -84,7 +84,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('naive-bayes.performance') }}"
+                                    <a href="{{ route('naive-bayes.performance.index') }}"
                                         class="flex flex-row justify-between px-4 py-2 hover:bg-gray-600 hover:text-white">
                                         <span>Performance</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
