@@ -6,101 +6,236 @@ use Illuminate\Http\Request;
 use App\Models\ImportedData;
 use App\Models\ImportedDataHistory;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-
-use function PHPSTORM_META\type;
+use Illuminate\Support\Facades\{
+    Auth,
+    Cache,
+    DB,
+    Log,
+    Storage
+};
 
 class DatasetController extends Controller
 {
     public function index()
     {
-        // Ambil data dengan pagination (misalnya, 50 data per halaman)
         $importedData = ImportedData::paginate(50);
-        // dd($importedData);
         return view('pages.naive-bayes.dataset', compact('importedData'));
     }
 
     public function import(Request $request)
     {
-        set_time_limit(120); // Tingkatkan batas waktu eksekusi
+        set_time_limit(300); // 5 minutes timeout
 
+        // Validate
         $request->validate([
-            'file' => 'required|mimes:xls,xlsx,csv'
+            'files.*' => 'required|mimes:xls,xlsx,csv|max:10240' // Max 10MB per file
         ]);
 
+        // Concurrency lock
+        if (Cache::get('import_lock')) {
+            return $this->importResponse(
+                false,
+                'System sedang memproses import sebelumnya. Coba lagi dalam beberapa menit.'
+            );
+        }
+        Cache::put('import_lock', true, now()->addHour());
+
         try {
-            $file = $request->file('file');
-            $data = Excel::toArray([], $file)[0]; // Ambil data dari sheet pertama
-
-            // Ambil header (baris pertama)
-            $headers = array_shift($data);
-
-            // Ambil email user yang sedang login
-            $userEmail = Auth::user()->email;
-
-            // Pindahkan data lama ke tabel history
-            $existingData = ImportedData::all();
-            foreach ($existingData as $oldData) {
-                ImportedDataHistory::create([
-                    'user_email' => $oldData->user_email,
-                    'dataset_id' => $oldData->dataset_id,
-                    'row_data' => $oldData->row_data,
-                    'modified_at' => now(), // Waktu saat data dipindahkan
-                ]);
+            // 1. Backup existing data
+            $backupPath = $this->createBackup();
+            if (!$backupPath) {
+                throw new \Exception("Gagal membuat backup data");
             }
 
-            // Hapus data lama dari tabel imported_data
-            ImportedData::truncate();
+            // 2. Process import
+            $results = $this->processFiles($request->file('files'));
 
-            // Bagi data menjadi chunk berisi 100 baris
-            $chunks = array_chunk($data, 100);
+            // 3. Cleanup
+            $this->deleteBackup($backupPath);
+            Cache::forget('import_lock');
 
-            // Proses setiap chunk
-            foreach ($chunks as $chunk) {
-                foreach ($chunk as $row) {
-                    ImportedData::create([
-                        'user_email' => $userEmail,
-                        'dataset_id' => 1, // Sesuaikan dengan dataset_id yang sesuai
-                        'row_data' => json_encode(array_combine($headers, $row)),
-                    ]);
-                }
+            return $this->importResponse(
+                true,
+                'Berhasil mengimpor ' . count($results['success']) . ' file',
+                $results['success']
+            );
+
+        } catch (\Throwable $e) {
+            // Restore on failure
+            if (isset($backupPath)) {
+                $this->restoreBackup($backupPath);
             }
 
-            return redirect()->route('naive-bayes.dataset.index')->with('message', [
-                'type' => 'Success',
-                'text' => 'Data berhasil diimport!',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error importing data: ' . $e->getMessage());
-            return redirect()->route('naive-bayes.dataset.index')->with('message', [
-                'type' => 'Error',
-                'text' => 'Terjadi kesalahan saat mengimport data.',
-            ]);
+            Cache::forget('import_lock');
+            Log::error("Import Error: " . $e->getMessage());
+
+            return $this->importResponse(
+                false,
+                'Error: ' . $e->getMessage(),
+                $request->file('files')->pluck('getClientOriginalName')->toArray()
+            );
         }
     }
 
     public function history()
     {
-        $history = ImportedDataHistory::with('user')->orderBy('modified_at', 'desc')->get();
+        $history = ImportedDataHistory::with('user')
+                   ->orderBy('modified_at', 'desc')
+                   ->paginate(50);
+
         return view('pages.naive-bayes.history', compact('history'));
     }
 
     public function restoreHistory($history_id)
     {
-        // Ambil data dari history berdasarkan ID
-        $historyData = ImportedDataHistory::findOrFail($history_id);
+        try {
+            $historyData = ImportedDataHistory::findOrFail($history_id);
 
-        // Hapus data saat ini dari imported_data
+            // Create current data backup
+            $backupPath = $this->createBackup();
+
+            // Restore history
+            ImportedData::truncate();
+            ImportedData::create([
+                'user_email' => Auth::user()->email,
+                'dataset_id' => $historyData->dataset_id,
+                'row_data' => $historyData->row_data,
+            ]);
+
+            return redirect()
+                ->route('naive-bayes.dataset.index')
+                ->with('message', [
+                    'type' => 'success',
+                    'text' => 'Data berhasil dikembalikan dari history'
+                ]);
+
+        } catch (\Throwable $e) {
+            // Restore backup if exists
+            if (isset($backupPath)) {
+                $this->restoreBackup($backupPath);
+            }
+
+            return redirect()
+                ->back()
+                ->with('message', [
+                    'type' => 'error',
+                    'text' => 'Gagal restore: ' . $e->getMessage()
+                ]);
+        }
+    }
+
+    // =============================================
+    // PRIVATE HELPER METHODS
+    // =============================================
+
+    private function createBackup()
+    {
+        try {
+            $filename = 'backup_' . now()->format('Ymd_His') . '.json';
+            $path = "import_backups/{$filename}";
+
+            Storage::put($path, json_encode(
+                ImportedData::all()->map->toArray()
+            ));
+
+            return $path;
+        } catch (\Throwable $e) {
+            Log::error("Backup failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function restoreBackup($path)
+    {
+        try {
+            if (Storage::exists($path)) {
+                $data = json_decode(Storage::get($path), true);
+
+                ImportedData::truncate();
+                foreach (array_chunk($data, 100) as $chunk) {
+                    ImportedData::insert($chunk);
+                }
+
+                Storage::delete($path);
+                return true;
+            }
+            return false;
+        } catch (\Throwable $e) {
+            Log::error("Restore failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function deleteBackup($path)
+    {
+        try {
+            if ($path && Storage::exists($path)) {
+                Storage::delete($path);
+            }
+        } catch (\Throwable $e) {
+            Log::error("Backup deletion failed: " . $e->getMessage());
+        }
+    }
+
+    private function processFiles($files)
+    {
+        $results = ['success' => [], 'failed' => []];
+        $userEmail = Auth::user()->email;
+
+        // Clear existing data
         ImportedData::truncate();
 
-        // Masukkan data dari history ke imported_data
-        ImportedData::create([
-            'user_id' => Auth::id(),
-            'dataset_id' => $historyData->dataset_id,
-            'row_data' => $historyData->row_data,
-        ]);
+        foreach ($files as $file) {
+            try {
+                $filename = $file->getClientOriginalName();
+                $data = Excel::toArray([], $file)[0];
+                $headers = array_shift($data);
 
-        return redirect()->back()->with('success', 'Data berhasil dikembalikan');
+                // Process in chunks
+                foreach (array_chunk($data, 100) as $chunk) {
+                    $batch = array_map(function ($row) use ($headers, $userEmail) {
+                        return [
+                            'user_email' => $userEmail,
+                            'dataset_id' => 1,
+                            'row_data' => json_encode(array_combine($headers, $row)),
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }, $chunk);
+
+                    ImportedData::insert($batch);
+                }
+
+                $results['success'][] = $filename;
+
+                // Log to history
+                ImportedDataHistory::create([
+                    'user_email' => $userEmail,
+                    'dataset_id' => 1,
+                    'row_data' => json_encode(['action' => 'import', 'files' => $filename]),
+                    'modified_at' => now()
+                ]);
+
+            } catch (\Throwable $e) {
+                $results['failed'][] = [
+                    'file' => $file->getClientOriginalName(),
+                    'error' => $e->getMessage()
+                ];
+                Log::error("File {$filename} failed: " . $e->getMessage());
+            }
+        }
+
+        return $results;
+    }
+
+    private function importResponse($success, $message, $files = [])
+    {
+        return redirect()
+            ->route('naive-bayes.dataset.index')
+            ->with('message', [
+                'type' => $success ? 'success' : 'error',
+                'text' => $message
+            ])
+            ->with('uploaded_files', $files);
     }
 }
