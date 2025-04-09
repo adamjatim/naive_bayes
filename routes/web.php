@@ -6,6 +6,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DatasetController;
 use App\Http\Controllers\InitialProcessController;
+use App\Http\Controllers\PerformanceController;
 
 // Halaman login dan proses login
 Route::middleware(['guest'])->group(function () {
@@ -44,9 +45,10 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/initial-process', [InitialProcessController::class, 'index'])->name('initial-process');
 
-            Route::get('/performance', function () {
-                return view('pages.naive-bayes.performance');
-            })->name('performance');
+            Route::prefix('/performance')->name('performance.')->group(function () {
+                Route::get('/', [PerformanceController::class, 'index'])->name('index');
+                Route::post('/calculate', [PerformanceController::class, 'calculate'])->name('calculate');
+            });
 
             Route::get('/prediction', function () {
                 return view('pages.naive-bayes.prediction');
