@@ -27,11 +27,7 @@
                                 @if ($importedData->isNotEmpty())
                                     @foreach (json_decode($importedData->first()->row_data, true) as $key => $value)
                                         <th scope="col"
-                                            class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400 text-center @if (count(json_decode($importedData->first()->row_data, true)) )
-
-                                            @else
-
-                                            @endif">
+                                            class="py-3.5 px-4 text-sm font-normal text-gray-500 dark:text-gray-400 text-center">
                                             {{ $key }}
                                         </th>
                                     @endforeach
