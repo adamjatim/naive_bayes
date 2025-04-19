@@ -12,13 +12,34 @@ class ImportedData extends Model
     protected $table = 'imported_data';
 
     protected $fillable = [
-        'user_email',
-        'dataset_id',
-        'row_data',
+        'no',
+        'rw',
+        'kriteria',
+        'usia',
+        'nama',
+        'tanggungan_kepala_keluarga',
+        'lansia',
+        'anak_wajib_sekolah',
+        'penghasilan_kepala_keluarga',
+        'status_bpjs',
+        'tipe_kendaraan',
+        'sumber_air',
+        'tipe_jamban',
+        'status_kepemilikan_bangunan',
+        'bahan_lantai',
+        'bahan_dinding',
+        'kategori_luas_bangunan',
+        'keterangan',
+        'user_id',
+        'file_name',
+        'file_size'
     ];
 
     protected $casts = [
-        'row_data' => 'array', // Agar otomatis dikonversi ke array saat diakses
+        'kriteria' => 'string',
+        'lansia' => 'string',
+        'anak_wajib_sekolah' => 'string',
+        'keterangan' => 'string'
     ];
 
     /**
