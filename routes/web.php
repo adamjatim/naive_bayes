@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DatasetController;
 use App\Http\Controllers\InitialProcessController;
 use App\Http\Controllers\PerformanceController;
+use App\Http\Controllers\PredictionController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
 // Halaman login dan proses login
 Route::middleware(['guest'])->group(function () {
@@ -20,9 +22,10 @@ Route::middleware(['guest'])->group(function () {
 // Proses logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Group route yang memerlukan autentikasi
+// // Group route yang memerlukan autentikasi
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/export', [DashboardController::class, 'exportPdf'])->name('export.report');
 
     Route::prefix('/profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
@@ -33,14 +36,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Route khusus admin
     Route::middleware(['admin'])->group(function () {
-        // Route::get('/admin/dashboard', function () {
-        //     return view('admin.dashboard');
-        // })->name('admin.dashboard');
 
         Route::name('naive-bayes.')->group(function () {
             Route::prefix('/dataset')->name('dataset.')->group(function () {
                 Route::get('/', [DatasetController::class, 'index'])->name('index');
                 Route::post('/import', [DatasetController::class, 'import'])->name('import');
+                Route::delete('/delete-all', [DatasetController::class, 'deleteAll'])->name('deleteAll');
+                Route::post('/clear-session', [DatasetController::class, 'clearSession'])->name('clear-session');
+                Route::get('/clear-session', [DatasetController::class, 'clearSession'])->name('clear-session');
             });
 
             Route::get('/initial-process', [InitialProcessController::class, 'index'])->name('initial-process');
@@ -50,9 +53,9 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('/calculate', [PerformanceController::class, 'calculate'])->name('calculate');
             });
 
-            Route::get('/prediction', function () {
-                return view('pages.naive-bayes.prediction');
-            })->name('prediction');
+            Route::prefix('/prediction')->name('prediction.')->group(function () {
+                Route::match(['get', 'post'], '/', [PredictionController::class, 'index'])->name('index');
+            });
         });
 
         Route::prefix('/karyawan')->name('karyawan.')->group(function () {
@@ -64,25 +67,10 @@ Route::middleware(['auth'])->group(function () {
                 return view('pages.karyawan.create');
             })->name('create');
         });
-
-        // Route::prefix('/karyawan')->name('karyawan.')->group(function() {
-        //     Route::get('/', function () {
-        //         return view('pages.karyawan.index');
-        //     })->name('index');
-        //
-        //     Route::get('/edit/{id}', function () {
-        //         return view('pages.karyawan.edit');
-        //     })->name('edit');
-        //     Route::get('/delete', function () {
-        //         return "Ini karyawan delete";
-        //     })->name('delete');
-        // });
     });
 
     // Route khusus karyawan
     // Route::middleware(['karyawan'])->group(function () {
-    //     Route::get('/karyawan/dashboard', function () {
-    //         return view('karyawan.dashboard');
-    //     })->name('karyawan.dashboard');
+    //     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('keryawan.dashboard');
     // });
 });
