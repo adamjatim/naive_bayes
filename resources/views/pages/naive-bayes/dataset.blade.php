@@ -2,136 +2,175 @@
 
 @section('title', 'Dataset')
 
+@section('styles')
+    <style>
+        /* File Upload Dropzone */
+        .file-upload {
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            background-color: #f9fafb;
+        }
+
+        /* File Preview Container */
+        #file-preview-container {
+            transition: all 0.3s ease;
+        }
+
+        /* File List Scrollbar */
+        #file-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #file-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #file-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        #file-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+@endsection
+
 @section('content')
 
-    <header class="bg-white shadow flex flex-col">
-        <div class="max-w-7xl w-full mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-row justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 flex items-center">
-                Dataset
-            </h2>
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between">
+            <h2 class="text-xl font-semibold text-gray-800 flex items-center">Dataset</h2>
+            <div class="flex flex-row gap-2">
+                <button onclick="openModal('importModal')"
+                    class="flex items-center px-5 py-2 text-sm text-white bg-blue-500 hover:bg-blue-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v16h16V4H4zm8 4v4m0 0v4m0-4h4m-4 0H8" />
+                    </svg>
+                    Import Dataset
+                </button>
+                <form method="POST" action="{{ route('naive-bayes.dataset.deleteAll') }}"
+                    onsubmit="return confirm('Yakin ingin menghapus seluruh data dataset?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="flex items-center px-5 py-2 text-sm text-white bg-red-500 hover:bg-red-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path fill="currentColor" fill-rule="evenodd" d="M5.75 3V1.5h4.5V3zm-1.5 0V1a1 1 0 0 1 1-1h5.5a1 1 0 0 1 1 1v2h2.5a.75.75 0 0 1 0 1.5h-.365l-.743 9.653A2 2 0 0 1 11.148 16H4.852a2 2 0 0 1-1.994-1.847L2.115 4.5H1.75a.75.75 0 0 1 0-1.5zm-.63 1.5h8.76l-.734 9.538a.5.5 0 0 1-.498.462H4.852a.5.5 0 0 1-.498-.462z" clip-rule="evenodd" stroke-width="0.1" stroke="currentColor" />
+                        </svg>
+                        Hapus Seluruh Dataset
+                    </button>
+                </form>
+            </div>
 
-            <button
-                class="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-50 transition-colors duration-200 bg-blue-500 border rounded-lg gap-x-2 sm:w-auto dark:hover:bg-gray-800 dark:bg-gray-900 hover:bg-blue-700 dark:text-gray-200 dark:border-gray-700"
-                onclick="openModal('importModal')">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_3098_154395)">
-                        <path
-                            d="M13.3333 13.3332L9.99997 9.9999M9.99997 9.9999L6.66663 13.3332M9.99997 9.9999V17.4999M16.9916 15.3249C17.8044 14.8818 18.4465 14.1806 18.8165 13.3321C19.1866 12.4835 19.2635 11.5359 19.0351 10.6388C18.8068 9.7417 18.2862 8.94616 17.5555 8.37778C16.8248 7.80939 15.9257 7.50052 15 7.4999H13.95C13.6977 6.52427 13.2276 5.61852 12.5749 4.85073C11.9222 4.08295 11.104 3.47311 10.1817 3.06708C9.25943 2.66104 8.25709 2.46937 7.25006 2.50647C6.24304 2.54358 5.25752 2.80849 4.36761 3.28129C3.47771 3.7541 2.70656 4.42249 2.11215 5.23622C1.51774 6.04996 1.11554 6.98785 0.935783 7.9794C0.756025 8.97095 0.803388 9.99035 1.07431 10.961C1.34523 11.9316 1.83267 12.8281 2.49997 13.5832"
-                            stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round" />
-                    </g>
-                    <defs>
-                        <clipPath id="clip0_3098_154395">
-                            <rect width="20" height="20" fill="white" />
-                        </clipPath>
-                    </defs>
-                </svg>
-
-                <span>Import Dataset</span>
-            </button>
         </div>
 
-        {{-- resources/views/partials/upload-notification.blade.php --}}
-        @if (session('uploaded_files'))
+        @if ($activeFiles->isNotEmpty())
             <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg mx-4">
-                <h3 class="font-medium text-blue-800 mb-2">File yang berhasil di upload:</h3>
+                <h3 class="font-medium text-blue-800 mb-2">File yang sedang digunakan:</h3>
                 <ul class="list-disc list-inside space-y-1">
-                    @foreach (session('uploaded_files') as $file)
-                        <li class="text-blue-700">{{ $file }}</li>
+                    @foreach ($activeFiles as $file)
+                        <li class="text-blue-700">
+                            <span class="font-semibold">{{ $file->file_name }}</span>
+                            &mdash; {{ number_format($file->file_size / 1024, 2) }} KB
+                        </li>
                     @endforeach
                 </ul>
             </div>
         @endif
 
+        @if (session('success'))
+            <div class="mx-4 mb-4 p-4 bg-green-50 text-green-800 border border-green-200 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mx-4 mb-4 p-4 bg-red-50 text-red-800 border border-red-200 rounded">
+                {{ session('error') }}
+            </div>
+        @endif
+
+
     </header>
 
-    <main class="bg-gray-100 flex-grow ">
-        <div class="flex flex-col m-6">
-
-            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg overflow-x-scroll ">
-                @if ($importedData->isEmpty())
-                    <!-- Tampilkan pesan jika data kosong -->
-                    <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-                        <p>Tidak ada data yang diimport.</p>
-                    </div>
-                @else
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
-                        <thead class="bg-gray-50 dark:bg-gray-800">
-                            <tr>
-                                @if ($importedData->isNotEmpty())
-                                    {{-- @foreach (json_decode($importedData->first()->row_data, true) as $key => $value) --}}
-                                    @foreach (is_array($importedData->first()->row_data) ? $importedData->first()->row_data : json_decode($importedData->first()->row_data, true) as $key => $value)
-                                        <th scope="col"
-                                            class="py-3.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
-                                            {{ $key }}
-                                        </th>
-                                    @endforeach
-                                @endif
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                            @foreach ($importedData as $index => $data)
-                                <tr>
-                                    {{-- @foreach (json_decode($data->row_data, true) as $value) --}}
-                                    @foreach (is_array($importedData->first()->row_data) ? $importedData->first()->row_data : json_decode($importedData->first()->row_data, true) as $key => $value)
-                                        <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-                                            {{ $value }}
-                                        </td>
-                                    @endforeach
-                                </tr>
+    <main class="bg-gray-100 p-6 flex-grow">
+        <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+            @if ($importedData->isEmpty())
+                <div class="text-center text-gray-500 p-6">Tidak ada data yang diimport.</div>
+            @else
+                <table class="min-w-full table-auto divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            @foreach (array_keys($importedData->first()->toArray()) as $column)
+                                <th
+                                    class="py-3.5 px-4 text-sm font-semibold text-left text-gray-500 dark:text-gray-400 uppercase">
+                                    {{ Str::headline($column) }}
+                                </th>
                             @endforeach
-
-                        </tbody>
-                    </table>
-
-                    <!-- Tampilkan navigasi pagination -->
-                    <div class="mt-4">
-                        {{ $importedData->links() }}
-                    </div>
-                @endif
-            </div>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach ($importedData as $data)
+                            <tr>
+                                @foreach ($data->toArray() as $key => $value)
+                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                                        {{ $value }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="mt-4">
+                    {{ $importedData->links() }}
+                </div>
+            @endif
         </div>
-
     </main>
 
 @endsection
 
 @section('modals')
-
     <div id="importModal"
         class="fixed inset-0 bg-black bg-opacity-50 justify-center items-center opacity-0 scale-95 hidden transition-all duration-300 ease-in-out px-5">
         <div
-            class="bg-white p-5 rounded-lg w-full sm:w-full sm:max-w-sm sm:p-6 sm:align-middle opacity-0 scale-95 transition-all duration-300 ease-in-out">
+            class="bg-white p-5 rounded-lg w-full sm:w-full sm:max-w-md sm:p-6 sm:align-middle opacity-0 scale-95 transition-all duration-300 ease-in-out">
             <h2 class="text-lg font-medium leading-6 text-gray-800 capitalize" id="title_modal">Import Dataset</h2>
             <form action="{{ route('naive-bayes.dataset.import') }}" method="POST" enctype="multipart/form-data"
                 class="mt-4">
                 @csrf
                 <div class="flex items-center justify-center w-full">
                     <label for="dropzone-file"
-                        class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                         <div class="flex flex-col items-center justify-center pt-5 pb-6" id="file-upload-placeholder">
                             <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
                             </svg>
-                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                <span class="font-semibold">Click to upload</span>
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">XLS, or XLSX (Multiple files allowed)
-                            </p>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span></p>
+                            <p class="text-xs text-gray-500">Excel files only (.xlsx, .xls)</p>
                         </div>
-                        <div id="file-info" class="hidden p-4 overflow-y-scroll w-full">
-                            <div class="flex flex-col gap-2" id="file-list"></div>
+                        <div id="file-preview-container" class="hidden w-full h-full">
+                            <div class="border rounded-lg divide-y divide-gray-200 w-full h-full">
+                                <div class="px-4 py-2 bg-gray-50 font-medium text-sm text-gray-500">
+                                    Selected Files
+                                </div>
+                                <div id="file-list" class="max-h-48 overflow-y-auto"></div>
+                            </div>
                         </div>
-                        <input id="dropzone-file" type="file" name="files[]" accept=".csv, .xls, .xlsx" class="hidden"
-                            multiple />
+                        <input id="dropzone-file" type="file" name="files[]" multiple accept=".xlsx,.xls"
+                            class="hidden" />
                     </label>
                 </div>
                 <div class="mt-5 flex flex-row justify-between">
-                    <button type="button" onclick="closeModal()"
+                    <button type="button" onclick="closeModal('importModal')"
                         class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-                    <button type="submit"
-                        class="bg-blue-600 rounded-lg hover:bg-blue-700 text-white px-4 py-2">Upload</button>
+                    <button type="submit" id="upload-button"
+                        class="bg-blue-600 rounded-lg hover:bg-blue-700 text-white px-4 py-2 hidden">Upload All</button>
                 </div>
             </form>
         </div>
@@ -140,58 +179,6 @@
 
 @section('scripts')
     <script>
-        // Handle file input change
-        document.getElementById('dropzone-file').addEventListener('change', function(event) {
-            const files = event.target.files;
-            const fileList = document.getElementById('file-list');
-            const filePlaceholder = document.getElementById('file-upload-placeholder');
-            const fileInfo = document.getElementById('file-info');
-
-            if (files.length > 0) {
-                filePlaceholder.classList.add('hidden');
-                fileInfo.classList.remove('hidden');
-                fileList.innerHTML = '';
-
-                Array.from(files).forEach(file => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'flex items-center';
-                    fileItem.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-                        <g fill="none" stroke="#1D6F42" stroke-linecap="round" stroke-width="4">
-                            <path stroke-linejoin="round" d="M8 15V6a2 2 0 0 1 2-2h28a2 2 0 0 1 2 2v36a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-9" />
-                            <path d="M31 15h3m-6 8h6m-6 8h6" />
-                            <path stroke-linejoin="round" d="M4 15h18v18H4zm6 6l6 6m0-6l-6 6" />
-                        </g>
-                    </svg>
-                    <div>
-                        <p class="text-sm font-medium text-gray-700">${file.name}</p>
-                        <p class="text-xs text-gray-500">${(file.size / 1024).toFixed(2)} KB</p>
-                    </div>
-                `;
-                    fileList.appendChild(fileItem);
-                });
-            } else {
-                fileInfo.classList.add('hidden');
-                filePlaceholder.classList.remove('hidden');
-            }
-        });
-
-
-        // Fungsi untuk mereset input file dan informasi file
-        function resetFileInput() {
-            const fileInput = document.getElementById('dropzone-file');
-            const fileInfo = document.getElementById('file-info');
-            const fileUploadPlaceholder = document.getElementById('file-upload-placeholder');
-
-            // Reset input file
-            fileInput.value = '';
-
-            // Sembunyikan informasi file dan tampilkan placeholder
-            fileInfo.classList.add('hidden');
-            fileUploadPlaceholder.classList.remove('hidden');
-        }
-
-        // Fungsi untuk membuka modal
         function openModal(id) {
             let modal = document.getElementById(id);
             let modalBox = modal.querySelector('div');
@@ -211,7 +198,6 @@
             });
         }
 
-        // Fungsi untuk menutup modal
         function closeModal(id) {
             let modal = document.getElementById(id);
             let modalBox = modal.querySelector('div');
@@ -221,8 +207,64 @@
 
             setTimeout(() => {
                 modal.classList.add('hidden', 'opacity-0');
-                resetFileInput(); // Reset input file saat modal ditutup
+                resetFileInput();
             }, 300);
         }
+
+        function resetFileInput() {
+            document.getElementById('dropzone-file').value = '';
+            document.getElementById('file-preview-container').classList.add('hidden');
+            document.getElementById('file-upload-placeholder').classList.remove('hidden');
+            document.getElementById('upload-button').classList.add('hidden');
+            document.getElementById('file-list').innerHTML = '';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        document.getElementById('dropzone-file').addEventListener('change', function(event) {
+            const files = event.target.files;
+            const fileList = document.getElementById('file-list');
+            const placeholder = document.getElementById('file-upload-placeholder');
+            const previewContainer = document.getElementById('file-preview-container');
+            const uploadButton = document.getElementById('upload-button');
+
+            if (files.length > 0) {
+                placeholder.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                uploadButton.classList.remove('hidden');
+                fileList.innerHTML = '';
+
+                Array.from(files).forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'px-4 py-2 flex items-center';
+
+                    fileItem.innerHTML = `
+                    <div class="flex-shrink-0 text-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                        <g fill="none" stroke="#1D6F42" stroke-linecap="round" stroke-width="4">
+                            <path stroke-linejoin="round" d="M8 15V6a2 2 0 0 1 2-2h28a2 2 0 0 1 2 2v36a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-9" />
+                            <path d="M31 15h3m-6 8h6m-6 8h6" />
+                            <path stroke-linejoin="round" d="M4 15h18v18H4zm6 6l6 6m0-6l-6 6" />
+                        </g>
+                    </svg>
+                    </div>
+                    <div class="ml-3 flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>
+                        <p class="text-xs text-gray-500">${formatFileSize(file.size)} • ${file.name.split('.').pop().toUpperCase()}</p>
+                    </div>
+                `;
+
+                    fileList.appendChild(fileItem);
+                });
+            } else {
+                resetFileInput();
+            }
+        });
     </script>
 @endsection

@@ -2,8 +2,6 @@
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4">
         @if (Auth::check())
             <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 rtl:space-x-reverse my-4">
-                {{-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> --}}
-                {{-- <img src="{{ asset('logo.png') }}" class="h-8" alt="Flowbite Logo" /> --}}
                 <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">
                     Halo, {{ Auth::user()->name }} 👋
                 </span>
@@ -99,7 +97,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('naive-bayes.prediction') }}"
+                                    <a href="{{ route('naive-bayes.prediction.index') }}"
                                         class="flex flex-row justify-between px-4 py-2 hover:bg-gray-600 hover:text-white">
                                         <span>Prediction</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"

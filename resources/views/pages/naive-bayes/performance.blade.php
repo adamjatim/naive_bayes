@@ -7,90 +7,129 @@
     <header class="bg-white shadow">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-row justify-between">
             <h2 class="font-semibold text-xl text-gray-800 flex items-center">
-                Uji Akurasi Metode
+                Performance
             </h2>
 
         </div>
     </header>
 
     <main class="bg-gray-100 flex-grow ">
-        <div class="mx-6 mt-2">
+        <div class="mx-6 my-2">
             <div>Prosentase Data Training</div>
             <form action="{{ route('naive-bayes.performance.calculate') }}" method="POST">
                 @csrf
-                <select class="w-2/5 border-gray-200 rounded-md" name="percentage" id="percentage">
-                    <option value="">-- persentase --</option>
-                    <option value="10">10%</option>
-                    <option value="20">20%</option>
-                    <option value="30">30%</option>
-                    <option value="40">40%</option>
-                    <option value="50">50%</option>
-                    <option value="60">60%</option>
-                    <option value="70">70%</option>
-                    <option value="80">80%</option>
-                    <option value="90">90%</option>
+                <label for="percentage" class="block mb-2 text-sm font-medium text-gray-700">Pilih Persentase Data
+                    Training:</label>
+                <select id="percentage" name="percentage" onchange="this.form.submit()"
+                    class="w-1/3 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Pilih Persentase --</option>
+                    @for ($i = 10; $i <= 90; $i += 10)
+                        <option value="{{ $i }}" {{ $percentage == $i ? 'selected' : '' }}>{{ $i }}%
+                        </option>
+                    @endfor
                 </select>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Hitung Akurasi</button>
             </form>
         </div>
 
-        <div class="flex flex-col m-6">
-            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-scroll ">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-auto">
-                    <thead class="bg-white">
+        @if ($percentage)
+            <!-- Tabel Pemisahan Data -->
+            <div class="bg-white shadow rounded-lg overflow-x-auto m-4">
+                <h3 class="text-xl font-semibold text-gray-700 my-4 mx-2">Pemisahan Data Training & Testing</h3>
+
+                <table class="min-w-full table-auto divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            @if ($importedData->isNotEmpty())
-                                @foreach (json_decode($importedData->first()->row_data, true) as $key => $value)
-                                    <th scope="col"
-                                        class="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                        {{ $key }}
+                            @foreach ($trainData->first()->getAttributes() as $key => $val)
+                                @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                    <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">
+                                        {{ Str::headline($key) }}
                                     </th>
-                                @endforeach
-                            @endif
+                                @endif
+                            @endforeach
                         </tr>
-
-                        <tr class="border-y">
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400 border-e"
-                                colspan="{{ $importedData->isNotEmpty() ? count(json_decode($importedData->first()->row_data, true)) - 1 : ' ' }}">
-                                <span>-- Atribut Pendukung --</span>
-                            </th>
-                            <th scope="col"
-                                class="px-4 py-3.5 text-sm font-normal text-center text-nowrap text-gray-500 dark:text-gray-400 border-s">
-                                <span>-- Label Target --</span>
-                            </th>
-                        </tr>
-
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-
-                        @foreach ($importedData as $index => $data)
-                            @php
-                                $rowData = json_decode($data->row_data, true);
-                                $totalColumns = count($rowData);
-                                $currentColumn = 0;
-                            @endphp
+                    <tbody>
+                        <tr>
+                            <td colspan="100%" class="px-4 py-2 text-center bg-blue-400 text-white font-semibold">Data Training
+                                ({{ $trainCount }})</td>
+                        </tr>
+                        @foreach ($trainData as $row)
                             <tr>
-                                @foreach ($rowData as $key => $value)
-                                    @php
-                                        $currentColumn++;
-                                        $isLastColumn = ($currentColumn === $totalColumns);
-                                    @endphp
-                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap  text-center {{ $isLastColumn ? 'bg-blue-100' : 'bg-yellow-100' }}">
-                                        {{ $value }}
-                                    </td>
+                                @foreach ($row->getAttributes() as $key => $val)
+                                    @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                        <td class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">{{ $val }}</td>
+                                    @endif
                                 @endforeach
                             </tr>
                         @endforeach
 
+                        <tr>
+                            <td colspan="100%" class="px-4 py-2 text-center bg-yellow-300 text-gray-700 font-semibold ">Data Testing
+                                ({{ $testCount }})</td>
+                        </tr>
+                        @foreach ($testData as $row)
+                            <tr>
+                                @foreach ($row->getAttributes() as $key => $val)
+                                    @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                        <td class="px-4 py-2 text-sm text-gray-700">{{ $val }}</td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        @if (session('accuracy'))
-            <div class="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                <p>Hasil Akurasi: {{ session('accuracy') }}%</p>
+            <!-- Tabel Proses Testing -->
+            @if (!empty($predictions))
+                <div class="mt-10 m-4  bg-white p-4 shadow rounded-lg overflow-x-auto">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Tabel Proses Testing</h3>
+
+                    <table class="w-full table-auto divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                @foreach ($testData->first()->getAttributes() as $key => $val)
+                                    @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                        <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">
+                                            {{ Str::headline($key) }}
+                                        </th>
+                                    @endif
+                                @endforeach
+                                <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">Hasil Testing
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($predictions as $row)
+                                <tr>
+                                    @foreach ($row['data']->getAttributes() as $key => $val)
+                                        @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                            <td class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">{{ $val }}</td>
+                                        @endif
+                                    @endforeach
+                                    <td
+                                        class="px-4 py-2 font-semibold {{ $row['correct'] ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $row['predicted'] }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+            @endif
+
+
+            <!-- Hasil Kalkulasi -->
+            <div class="mt-6 m-4 p-4 bg-red-500 border border-red-200 text-white rounded">
+                <h3 class="font-semibold">Hasil Kalkulasi</h3>
+                <p>Total Data: {{ $total }}</p>
+                <p>Data Training: {{ $trainCount }}</p>
+                <p>Data Testing: {{ $testCount }}</p>
+                @if (!empty($predictions))
+                    <p>Akurasi: <span class="font-semibold">{{ $accuracy }}%</span></p>
+                @endif
+
             </div>
         @endif
     </main>
