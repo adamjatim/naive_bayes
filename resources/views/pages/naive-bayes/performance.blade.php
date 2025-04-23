@@ -2,14 +2,14 @@
 
 @section('title', 'Performance')
 
-@section('content')
 
+
+@section('content')
     <header class="bg-white shadow">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-row justify-between">
             <h2 class="font-semibold text-xl text-gray-800 flex items-center">
                 Performance
             </h2>
-
         </div>
     </header>
 
@@ -32,9 +32,9 @@
         </div>
 
         @if ($percentage)
-            <!-- Tabel Pemisahan Data -->
+            <!-- Tabel Data Training -->
             <div class="bg-white shadow rounded-lg overflow-x-auto m-4">
-                <h3 class="text-xl font-semibold text-gray-700 my-4 mx-2">Pemisahan Data Training & Testing</h3>
+                <h3 class="text-xl font-semibold text-gray-700 my-4 mx-2">Data Training ({{ $trainCount }})</h3>
 
                 <table class="min-w-full table-auto divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -48,77 +48,114 @@
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="100%" class="px-4 py-2 text-center bg-blue-400 text-white font-semibold">Data Training
-                                ({{ $trainCount }})</td>
-                        </tr>
-                        @foreach ($trainData as $row)
+                    <tbody id="lazy-train-table">
+                        @foreach ($trainData->take(100) as $row)
                             <tr>
                                 @foreach ($row->getAttributes() as $key => $val)
                                     @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
-                                        <td class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">{{ $val }}</td>
-                                    @endif
-                                @endforeach
-                            </tr>
-                        @endforeach
-
-                        <tr>
-                            <td colspan="100%" class="px-4 py-2 text-center bg-yellow-300 text-gray-700 font-semibold ">Data Testing
-                                ({{ $testCount }})</td>
-                        </tr>
-                        @foreach ($testData as $row)
-                            <tr>
-                                @foreach ($row->getAttributes() as $key => $val)
-                                    @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
-                                        <td class="px-4 py-2 text-sm text-gray-700">{{ $val }}</td>
+                                        <td
+                                            class="px-4 py-2 text-sm text-gray-700 bg-blue-100 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">
+                                            {{ $val }}</td>
                                     @endif
                                 @endforeach
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+
+                <div class="text-center py-4">
+                    <button id="loadMoreTrainBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        Load lebih banyak data training
+                    </button>
+                    <div id="spinnerTrain"
+                        class="hidden mt-2 animate-spin w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full mx-auto">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Data Testing -->
+            <div class="bg-white shadow rounded-lg overflow-x-auto m-4">
+                <h3 class="text-xl font-semibold text-gray-700 my-4 mx-2">Data Testing ({{ $testCount }})</h3>
+
+                <table class="min-w-full table-auto divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            @foreach ($testData->first()->getAttributes() as $key => $val)
+                                @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                    <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">
+                                        {{ Str::headline($key) }}
+                                    </th>
+                                @endif
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody id="lazy-test-table">
+                        @foreach ($testData->take(100) as $row)
+                            <tr>
+                                @foreach ($row->getAttributes() as $key => $val)
+                                    @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                        <td
+                                            class="px-4 py-2 text-sm text-gray-700 bg-yellow-100 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">
+                                            {{ $val }}</td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <div class="text-center py-4">
+                    <button id="loadMoreBtn" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+                        Load lebih banyak data testing
+                    </button>
+                    <div id="spinner"
+                        class="hidden mt-2 animate-spin w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full mx-auto">
+                    </div>
+                </div>
             </div>
 
             <!-- Tabel Proses Testing -->
-            @if (!empty($predictions))
-                <div class="mt-10 m-4  bg-white p-4 shadow rounded-lg overflow-x-auto">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Tabel Proses Testing</h3>
-
-                    <table class="w-full table-auto divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+            <div class="mt-10 m-4 bg-white p-4 shadow rounded-lg overflow-x-auto">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Tabel Proses Testing</h3>
+                <table class="w-full table-auto divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            @foreach ($testData->first()->getAttributes() as $key => $val)
+                                @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
+                                    <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">
+                                        {{ Str::headline($key) }}
+                                    </th>
+                                @endif
+                            @endforeach
+                            <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">Hasil Testing</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lazy-process-table">
+                        @foreach (collect($predictions)->take(100) as $row)
                             <tr>
-                                @foreach ($testData->first()->getAttributes() as $key => $val)
+                                @foreach ($row['data']->getAttributes() as $key => $val)
                                     @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
-                                        <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">
-                                            {{ Str::headline($key) }}
-                                        </th>
+                                        <td class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">{{ $val }}</td>
                                     @endif
                                 @endforeach
-                                <th class="px-4 py-2 text-xs font-semibold text-gray-600 uppercase text-left">Hasil Testing
-                                </th>
+                                <td
+                                    class="px-4 py-2 font-semibold {{ $row['correct'] ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $row['predicted'] }}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($predictions as $row)
-                                <tr>
-                                    @foreach ($row['data']->getAttributes() as $key => $val)
-                                        @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
-                                            <td class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">{{ $val }}</td>
-                                        @endif
-                                    @endforeach
-                                    <td
-                                        class="px-4 py-2 font-semibold {{ $row['correct'] ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ $row['predicted'] }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <div class="text-center py-4">
+                    <button id="loadMoreProcessBtn" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                        Load lebih banyak hasil testing
+                    </button>
+                    <div id="spinnerProcess"
+                        class="hidden mt-2 animate-spin w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full mx-auto">
+                    </div>
                 </div>
-
-            @endif
-
+            </div>
 
             <!-- Hasil Kalkulasi -->
             <div class="mt-6 m-4 p-4 bg-red-500 border border-red-200 text-white rounded">
@@ -129,9 +166,148 @@
                 @if (!empty($predictions))
                     <p>Akurasi: <span class="font-semibold">{{ $accuracy }}%</span></p>
                 @endif
-
             </div>
         @endif
     </main>
+@endsection
+
+@section('scripts')
+    <script>
+        let batch = 1;
+        const perBatch = 100;
+        let total = {{ $testCount }};
+        let loading = false;
+
+        document.getElementById('loadMoreBtn')?.addEventListener('click', async function() {
+            if (loading) return;
+            loading = true;
+            this.disabled = true;
+            document.getElementById('spinner').classList.remove('hidden');
+
+            batch++;
+            const res = await fetch(
+                `{{ route('naive-bayes.performance.lazy.testing') }}?percentage={{ $percentage }}&batch=${batch}`
+            );
+            const data = await res.json();
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(val => {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-2 text-sm text-gray-700 bg-yellow-100';
+                    if (typeof val === 'string' && val.includes('RW')) {
+                        td.className.add = 'whitespace-nowrap';
+                    }
+                    td.textContent = val;
+                    tr.appendChild(td);
+                });
+                document.getElementById('lazy-test-table').appendChild(tr);
+            });
+
+            document.getElementById('spinner').classList.add('hidden');
+            this.disabled = false;
+            loading = false;
+
+            if ((batch * perBatch) >= total) {
+                this.remove();
+            }
+        });
+    </script>
+    <script>
+        let batchTrain = 1;
+        const perBatchTrain = 100;
+        const totalTrain = {{ $trainCount }};
+
+        document.getElementById('loadMoreTrainBtn')?.addEventListener('click', async function() {
+            if (loading) return;
+            loading = true;
+            this.disabled = true;
+            document.getElementById('spinnerTrain').classList.remove('hidden');
+
+            batchTrain++;
+            const res = await fetch(
+                `{{ route('naive-bayes.performance.lazy.training') }}?percentage={{ $percentage }}&batch=${batchTrain}`
+            );
+            const data = await res.json();
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(val => {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-2 text-sm text-gray-700 bg-blue-100';
+                    if (typeof val === 'string' && val.includes('RW')) {
+                        td.className.add = 'whitespace-nowrap';
+                    }
+                    td.textContent = val;
+                    tr.appendChild(td);
+                });
+                document.getElementById('lazy-train-table').appendChild(tr);
+            });
+
+            document.getElementById('spinnerTrain').classList.add('hidden');
+            this.disabled = false;
+            loading = false;
+
+            if ((batchTrain * perBatchTrain) >= totalTrain) {
+                this.remove();
+            }
+        });
+    </script>
+    <script>
+        let batchProcess = 1;
+        const perBatchProcess = 100;
+        const totalProcess = {{ count($predictions ?? []) }};
+        document.getElementById('loadMoreProcessBtn')?.addEventListener('click', async function() {
+            if (loading) return;
+            loading = true;
+            this.disabled = true;
+            document.getElementById('spinnerProcess').classList.remove('hidden');
+
+            try {
+                batchProcess++;
+                const res = await fetch(
+                    `{{ route('naive-bayes.performance.lazy.process') }}?percentage={{ $percentage }}&batch=${batchProcess}`
+                );
+
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+                const data = await res.json();
+
+                if (!Array.isArray(data)) throw new Error('Invalid response format');
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+
+                    row.data.forEach(val => {
+                        const td = document.createElement('td');
+                        td.className = 'px-4 py-2 text-sm text-gray-700';
+                        if (typeof val === 'string' && val.includes('RW')) {
+                            td.className.add = 'whitespace-nowrap';
+                        }
+                        td.textContent = val;
+                        tr.appendChild(td);
+                    });
+
+                    const resultTd = document.createElement('td');
+                    resultTd.className = 'px-4 py-2 font-semibold ' + (row.correct ? 'text-green-600' :
+                        'text-red-600');
+                    resultTd.textContent = row.predicted;
+                    tr.appendChild(resultTd);
+
+                    document.getElementById('lazy-process-table').appendChild(tr);
+                });
+
+                if ((batchProcess * perBatchProcess) >= totalProcess) {
+                    this.remove();
+                }
+            } catch (err) {
+                console.error('Gagal load proses testing:', err.message);
+            }
+
+            document.getElementById('spinnerProcess').classList.add('hidden');
+            this.disabled = false;
+            loading = false;
+        });
+    </script>
 
 @endsection

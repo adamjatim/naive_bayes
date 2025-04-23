@@ -41,7 +41,7 @@
                 </tbody>
             </table>
             <div class="mt-4">
-                {{-- {{ $importedData->links() }} --}}
+                {{ $importedData->links() }}
             </div>
         @endif
     </div>
