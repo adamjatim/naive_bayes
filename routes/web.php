@@ -51,6 +51,9 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('/performance')->name('performance.')->group(function () {
                 Route::get('/', [PerformanceController::class, 'index'])->name('index');
                 Route::post('/calculate', [PerformanceController::class, 'calculate'])->name('calculate');
+                Route::get('/lazy/training', [PerformanceController::class, 'lazyLoadTraining'])->name('lazy.training');
+                Route::get('/lazy/testing', [PerformanceController::class, 'lazyLoadTesting'])->name('lazy.testing');
+                Route::get('/lazy/process-testing', [PerformanceController::class, 'lazyLoadProcess'])->name('lazy.process');
             });
 
             Route::prefix('/prediction')->name('prediction.')->group(function () {
