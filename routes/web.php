@@ -19,11 +19,12 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
 });
 
-// Proses logout
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
 // // Group route yang memerlukan autentikasi
 Route::middleware(['auth'])->group(function () {
+
+    // Proses logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/export', [DashboardController::class, 'exportPdf'])->name('export.report');
 

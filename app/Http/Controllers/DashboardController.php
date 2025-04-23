@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Collection;
 use App\Models\ActivityLog;
 use App\Models\ImportedData;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -46,57 +47,38 @@ class DashboardController extends Controller
         return view('pages.dashboard', compact('logs', 'kriteriaStats', 'rwStats', 'availableFiles', 'jumlahPenerima', 'jumlahBukan', 'fileStats'));
     }
 
+
+    // PredictionController.php
     public function exportPdf(Request $request)
     {
-        ini_set('memory_limit', '512M');
-        ini_set('max_execution_time', 120);
+        $request->validate([
+            'file_name' => 'required|string'
+        ]);
 
-        $percentage = (int) $request->get('percentage');
-        $data = ImportedData::orderBy('id')->get();
+        $fileName = $request->input('file_name');
 
-        $total = $data->count();
-        $trainingCount = (int) round($total * ($percentage / 100));
-        $dataTraining = $data->slice(0, $trainingCount);
-        $dataTesting = $data->slice($trainingCount);
+        // Ambil data berdasarkan nama file
+        $data = ImportedData::where('file_name', $fileName)
+            ->orderBy('id')
+            ->get();
 
-        $grouped = $dataTraining->groupBy('keterangan');
-        $probabilities = [];
-        foreach ($grouped as $label => $items) {
-            $probabilities[$label] = $items->count() / $dataTraining->count();
-        }
+        // Hitung statistik
+        $summary = [
+            'file_name' => $fileName,
+            'total_data' => $data->count(),
+            'jumlah_penerima' => $data->where('keterangan', 'penerima')->count(),
+            'jumlah_bukan' => $data->where('keterangan', 'bukan_penerima')->count()
+        ];
 
-        $predictions = [];
-        foreach ($dataTesting as $item) {
-            // Misal: pakai tur 'kriteria' sebagai indikator utama
-            $prediksi = $item->kriteria === 'usia_produktif' ? 'penerima' : 'bukan_penerima';
-            $predictions[] = [
-                'data' => $item,
-                'actual' => $item->keterangan,
-                'predicted' => $prediksi,
-                'correct' => $prediksi === $item->keterangan, // ✅ tambahkan ini!
-            ];
-        }
-
-        $correct = collect($predictions)->filter(function ($p) {
-            return $p['actual'] === $p['predicted'];
-            })->count();
-        $accuracy = $correct / count($predictions) * 100;
-
-        // dd($data);
-        // return view('exports.report', compact('testData', 'summary'));
-
+        // Generate PDF
         $pdf = Pdf::loadView('exports.report', [
-            'predictions' => $predictions,   // hasil proses testing
-            'summary' => [
-                'persentase' => $percentage,
-                'jumlah_penerima' => collect($predictions)->where('actual', 'penerima')->count(),
-                'jumlah_bukan' => collect($predictions)->where('actual', 'bukan_penerima')->count(),
-                'total_testing' => count($predictions),
-                'akurasi' => round($accuracy, 2). '%',
-            ]
-        ])->setPaper('a3', 'landscape')
-        ->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => false]); // ← set ukuran & orientasi;
+            'data' => $data,
+            'summary' => $summary
+        ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream("report-testing-{$percentage}persen.pdf");
+        // Nama file download
+        $downloadFileName = 'laporan_' . str_replace([' ', '.xlsx', '.xls'], '_', $fileName) . '.pdf';
+
+        return $pdf->download($downloadFileName);
     }
 }
