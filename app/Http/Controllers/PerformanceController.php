@@ -14,7 +14,10 @@ class PerformanceController extends Controller
         $percentage = (int) $request->get('percentage');
         $data = ImportedData::orderBy('id')->get();
 
+
         $total = $data->count();
+        $totalData = $data->count();
+        // dd($total);
         $trainCount = (int) round($total * ($percentage / 100));
         $testCount = $total - $trainCount;
 
@@ -32,7 +35,8 @@ class PerformanceController extends Controller
             'trainCount' => $trainCount,
             'testCount' => $testCount,
             'predictions' => [],
-            'accuracy' => null
+            'accuracy' => null,
+            'totalData' => $totalData
         ]);
     }
 
@@ -108,6 +112,8 @@ class PerformanceController extends Controller
             'created_at' => now(),
         ]);
 
+        $totalData = $data->count();
+
         return view('pages.naive-bayes.performance', compact(
             'percentage',
             'trainData',
@@ -116,7 +122,8 @@ class PerformanceController extends Controller
             'trainCount',
             'testCount',
             'predictions',
-            'accuracy'
+            'accuracy',
+            'totalData'
         ));
     }
 

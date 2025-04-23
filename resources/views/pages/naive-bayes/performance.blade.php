@@ -160,7 +160,7 @@
             <!-- Hasil Kalkulasi -->
             <div class="mt-6 m-4 p-4 bg-red-500 border border-red-200 text-white rounded">
                 <h3 class="font-semibold">Hasil Kalkulasi</h3>
-                <p>Total Data: {{ $total }}</p>
+                <p>Total Data: {{ $totalData }}</p>
                 <p>Data Training: {{ $trainCount }}</p>
                 <p>Data Testing: {{ $testCount }}</p>
                 @if (!empty($predictions))
