@@ -19,8 +19,8 @@ class InitialProcessController extends Controller
             'bahan_lantai', 'bahan_dinding', 'kategori_luas_bangunan', 'keterangan'
         ];
 
-        // $importedData = ImportedData::select($columns)->paginate(50);
-        $importedData = ImportedData::select($columns)->get();
+        $importedData = ImportedData::select($columns)->paginate(50);
+        // $importedData = ImportedData::select($columns)->get();
 
         // Kirim data ke view
         return view('pages.naive-bayes.initial-process', compact('importedData'));

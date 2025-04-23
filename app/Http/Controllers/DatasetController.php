@@ -213,6 +213,11 @@ class DatasetController extends Controller
     {
         ImportedData::truncate(); // menghapus semua data dari tabel
 
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete semua data'
+        ]);
+
         return redirect()->route('naive-bayes.dataset.index')
             ->with('success', 'Seluruh data dataset berhasil dihapus.');
     }
