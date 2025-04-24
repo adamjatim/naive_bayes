@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Collection;
 use App\Models\ActivityLog;
 use App\Models\ImportedData;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\PredictionExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // History aktivitas admin
         $logs = ActivityLog::with('user')
             ->orderByDesc('created_at')
             ->get();
 
-        // Statistik penerima berdasarkan kriteria (kategori)
         $kriteriaStats = ImportedData::where('keterangan', 'penerima')
             ->select('kriteria', DB::raw('count(*) as total'))
             ->groupBy('kriteria')
             ->pluck('total', 'kriteria');
 
-        // Statistik penerima berdasarkan wilayah (rw)
         $rwStats = ImportedData::where('keterangan', 'penerima')
             ->select('rw', DB::raw('count(*) as total'))
             ->groupBy('rw')
@@ -38,7 +38,6 @@ class DashboardController extends Controller
             ->groupBy('file_name')
             ->pluck('total', 'file_name');
 
-        // Untuk filter export
         $availableFiles = ImportedData::select('file_name')
             ->whereNotNull('file_name')
             ->distinct()
@@ -47,38 +46,35 @@ class DashboardController extends Controller
         return view('pages.dashboard', compact('logs', 'kriteriaStats', 'rwStats', 'availableFiles', 'jumlahPenerima', 'jumlahBukan', 'fileStats'));
     }
 
-
-    // PredictionController.php
     public function exportPdf(Request $request)
     {
-        $request->validate([
-            'file_name' => 'required|string'
-        ]);
+        $percentage = (int) $request->get('percentage');
+        $data = ImportedData::orderBy('id')->get();
 
-        $fileName = $request->input('file_name');
+        $total = $data->count();
+        $trainingCount = (int) round($total * ($percentage / 100));
+        $dataTraining = $data->slice(0, $trainingCount);
+        $dataTesting = $data->slice($trainingCount);
 
-        // Ambil data berdasarkan nama file
-        $data = ImportedData::where('file_name', $fileName)
-            ->orderBy('id')
-            ->get();
+        $predictions = [];
+        foreach ($dataTesting as $item) {
+            $prediksi = $item->kriteria === 'usia_produktif' ? 'penerima' : 'bukan_penerima';
+            $predictions[] = [
+                'data' => $item,
+                'actual' => $item->keterangan,
+                'predicted' => $prediksi,
+                'correct' => $prediksi === $item->keterangan,
+            ];
+        }
 
-        // Hitung statistik
         $summary = [
-            'file_name' => $fileName,
-            'total_data' => $data->count(),
-            'jumlah_penerima' => $data->where('keterangan', 'penerima')->count(),
-            'jumlah_bukan' => $data->where('keterangan', 'bukan_penerima')->count()
+            'persentase' => $percentage,
+            'jumlah_penerima' => collect($predictions)->where('actual', 'penerima')->count(),
+            'jumlah_bukan' => collect($predictions)->where('actual', 'bukan_penerima')->count(),
+            'total_testing' => count($predictions),
+            'akurasi' => round((collect($predictions)->where('correct', true)->count() / count($predictions)) * 100, 2)
         ];
 
-        // Generate PDF
-        $pdf = Pdf::loadView('exports.report', [
-            'data' => $data,
-            'summary' => $summary
-        ])->setPaper('a4', 'landscape');
-
-        // Nama file download
-        $downloadFileName = 'laporan_' . str_replace([' ', '.xlsx', '.xls'], '_', $fileName) . '.pdf';
-
-        return $pdf->download($downloadFileName);
+        return Excel::download(new PredictionExport($predictions, $summary), "prediction-{$percentage}persen.xlsx");
     }
 }

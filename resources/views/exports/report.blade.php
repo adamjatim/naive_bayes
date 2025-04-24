@@ -1,16 +1,34 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Laporan Proses Testing - {{ $summary['persentase'] }}%</title>
     <style>
-        body { font-family: sans-serif; font-size: 12px; }
-        h1, h2 { margin: 0; padding: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #000; padding: 6px; text-align: left; }
-        th { background-color: #f3f3f3; }
+        h1 {
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 4px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f3f3f3;
+        }
     </style>
 </head>
+
 <body>
     <h1>Laporan Proses Testing ({{ $summary['persentase'] }}%)</h1>
     <p><strong>Tanggal:</strong> {{ now()->format('d M Y H:i') }}</p>
@@ -23,7 +41,7 @@
         <li>Akurasi: {{ $summary['akurasi'] }}%</li>
     </ul>
 
-    <h2>Data Proses Testing</h2>
+    <h2>Hasil Testing</h2>
     <table>
         <thead>
             <tr>
@@ -40,17 +58,15 @@
                 <tr>
                     @foreach ($row['data']->getAttributes() as $key => $val)
                         @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
-                            <td style="@if (is_string($val) && str_contains($val, 'RW')) white-space: nowrap; @endif">
-                                {{ $val }}
-                            </td>
+                            <td>{{ $val }}</td>
                         @endif
                     @endforeach
-                    <td style="font-weight: bold; color: {{ $row['correct'] ? '#16a34a' : '#dc2626' }}">
-                        {{ $row['predicted'] }}
-                    </td>
+                    <td>{{ $row['predicted'] }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
 </body>
+
 </html>
