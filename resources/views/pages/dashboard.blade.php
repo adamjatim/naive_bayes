@@ -33,9 +33,9 @@
                 <div class="w-full bg-white p-6 rounded-2xl border">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Export Laporan</h3>
 
-                    <form action="{{ route('export.report') }}" method="GET" class="flex items-center space-x-4">
+                    <form id="exportForm" action="{{ route('export.report') }}" method="GET" class="flex items-center space-x-4">
                         <select name="percentage" class="border-gray-300 rounded shadow-sm px-3 py-2">
-                            <option value="" disabled selected>-- Pilih Persentase Data Testing --</option>
+                            <option disabled selected>-- Pilih Persentase Data Testing --</option>
                             @for ($i = 10; $i <= 90; $i += 10)
                                 <option value="{{ $i }}">{{ $i }}%</option>
                             @endfor
@@ -108,6 +108,17 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.getElementById('exportForm').addEventListener('submit', function(e) {
+            const percentage = document.getElementById('percentage').value;
+
+            if (percentage>0 || percentage != "") {
+                e.preventDefault();
+                alert('Silakan pilih persentase data terlebih dahulu sebelum mengekspor.');
+            }
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Chart: Penerima per Kategori

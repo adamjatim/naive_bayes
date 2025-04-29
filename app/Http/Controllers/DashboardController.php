@@ -102,14 +102,28 @@ class DashboardController extends Controller
 
     public function exportPdf(Request $request)
     {
+        // Validasi awal (jika request kosong)
+        $request->validate([
+            'percentage' => 'required|integer|min:1|max:100',
+        ], [
+            'percentage.required' => 'Silakan pilih persentase data terlebih dahulu sebelum mengekspor.'
+        ]);
+
         $percentage = (int) $request->get('percentage');
+
+        // Ambil data dari file yang dipilih
         $data = ImportedData::orderBy('id')->get();
+
+        if ($data->isEmpty()) {
+            return redirect()->back()->with('error', 'Data untuk file tersebut tidak ditemukan.');
+        }
 
         $total = $data->count();
         $trainingCount = (int) round($total * ($percentage / 100));
         $dataTraining = $data->slice(0, $trainingCount);
         $dataTesting = $data->slice($trainingCount);
 
+        // Lakukan prediksi (sederhana)
         $predictions = [];
         foreach ($dataTesting as $item) {
             $prediksi = $item->kriteria === 'usia_produktif' ? 'penerima' : 'bukan_penerima';
@@ -126,9 +140,11 @@ class DashboardController extends Controller
             'jumlah_penerima' => collect($predictions)->where('actual', 'penerima')->count(),
             'jumlah_bukan' => collect($predictions)->where('actual', 'bukan_penerima')->count(),
             'total_testing' => count($predictions),
-            'akurasi' => round((collect($predictions)->where('correct', true)->count() / count($predictions)) * 100, 2)
+            'akurasi' => count($predictions) > 0
+                ? round((collect($predictions)->where('correct', true)->count() / count($predictions)) * 100, 2)
+                : 0,
         ];
 
-        return Excel::download(new PredictionExport($predictions, $summary), "prediction-{$percentage}persen.xlsx");
+        return Excel::download(new \App\Exports\PredictionExport($predictions, $summary), "prediction-{$percentage}persen.xlsx");
     }
 }
