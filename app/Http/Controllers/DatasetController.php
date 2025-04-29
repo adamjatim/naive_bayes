@@ -100,38 +100,21 @@ class DatasetController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'files.*' => 'required|mimes:xlsx,xls|max:2048'
+            'files.*' => 'required|mimes:xlsx,xls'
         ]);
 
         try {
+            $queue = collect(); // ➔ tempat antrian sementara
             $importedCount = 0;
 
             foreach ($request->file('files') as $file) {
                 $fileName = $file->getClientOriginalName();
                 $fileSize = $file->getSize();
 
-                // Validasi nama file identik atau mirip
-                $normalized = strtolower(Str::slug(pathinfo($fileName, PATHINFO_FILENAME)));
-                $existing = ImportedData::whereNotNull('file_name')
-                    ->get()
-                    ->filter(
-                        fn($row) =>
-                        strtolower(Str::slug(pathinfo($row->file_name, PATHINFO_FILENAME))) === $normalized
-                    );
-
-                if ($existing->isNotEmpty()) {
-                    throw new \Exception("File \"{$fileName}\" sudah pernah atau mirip dengan yang diimport.");
-                }
-
-                // Proses file
                 $data = Excel::toArray([], $file)[0];
                 $headers = array_shift($data);
 
-                $normalizedHeaders = array_map(
-                    fn($h) =>
-                    preg_replace('/\s+/', ' ', trim(strtoupper($h))),
-                    $headers
-                );
+                $normalizedHeaders = array_map(fn($h) => preg_replace('/\s+/', ' ', trim(strtoupper($h))), $headers);
 
                 $required = ['RW', 'USIA', 'KETERANGAN'];
                 $missing = array_diff($required, $normalizedHeaders);
@@ -140,8 +123,15 @@ class DatasetController extends Controller
                     throw new \Exception("File {$fileName} tidak memiliki kolom wajib: " . implode(', ', $missing));
                 }
 
-                foreach ($data as $rowIndex => $row) {
+                // Cari index RW
+                $rwIndex = array_search('RW', $normalizedHeaders);
+                if ($rwIndex === false) {
+                    throw new \Exception("File {$fileName} tidak memiliki kolom RW.");
+                }
+
+                foreach ($data as $row) {
                     $mapped = [];
+
                     foreach ($normalizedHeaders as $i => $header) {
                         if (isset(self::COLUMN_MAPPING[$header])) {
                             $dbCol = self::COLUMN_MAPPING[$header];
@@ -155,15 +145,22 @@ class DatasetController extends Controller
                     }
 
                     $mapped['kriteria'] = $this->determineKriteria($mapped['usia']);
-                    $mapped['user_id'] = Auth::user()->id;
                     $mapped['user_id'] = Auth::id();
                     $mapped['file_name'] = $fileName;
                     $mapped['file_size'] = $fileSize;
 
-                    ImportedData::create($mapped);
-                    $importedCount++;
+                    $queue->push($mapped); // ➔ masukkan ke queue
                 }
             }
+
+            // 🔥 Sort queue berdasarkan RW numerik
+            $sortedQueue = $queue->sortBy(function ($item) {
+                return (int) preg_replace('/[^0-9]/', '', $item['rw']);
+            })->values(); // reset index setelah sort
+
+            // 🔥 Setelah dipastikan semua rapi, bulk insert sekaligus
+            ImportedData::insert($sortedQueue->toArray());
+            $importedCount = $sortedQueue->count();
 
             ActivityLog::create([
                 'user_id' => Auth::id(),
@@ -173,7 +170,7 @@ class DatasetController extends Controller
 
             return redirect()
                 ->route('naive-bayes.dataset.index')
-                ->with('success', "Berhasil mengimpor {$importedCount} data.");
+                ->with('success', "Berhasil mengimpor {$importedCount} data. Semua RW sudah terurut sempurna!");
         } catch (\Exception $e) {
             Log::error('Import error: ' . $e->getMessage());
 
@@ -182,6 +179,7 @@ class DatasetController extends Controller
                 ->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
         }
     }
+
 
     protected function transformValue($column, $value)
     {

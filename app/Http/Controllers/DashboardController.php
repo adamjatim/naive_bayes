@@ -14,6 +14,38 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class DashboardController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $logs = ActivityLog::with('user')
+    //         ->orderByDesc('created_at')
+    //         ->get();
+
+    //     $kriteriaStats = ImportedData::where('keterangan', 'penerima')
+    //         ->select('kriteria', DB::raw('count(*) as total'))
+    //         ->groupBy('kriteria')
+    //         ->pluck('total', 'kriteria');
+
+    //     $rwStats = ImportedData::where('keterangan', 'penerima')
+    //         ->select('rw', DB::raw('count(*) as total'))
+    //         ->groupBy('rw')
+    //         ->pluck('total', 'rw');
+
+    //     $jumlahPenerima = ImportedData::where('keterangan', 'penerima')->count();
+    //     $jumlahBukan = ImportedData::where('keterangan', 'bukan_penerima')->count();
+
+    //     $fileStats = ImportedData::select('file_name', DB::raw('count(*) as total'))
+    //         ->whereNotNull('file_name')
+    //         ->groupBy('file_name')
+    //         ->pluck('total', 'file_name');
+
+    //     $availableFiles = ImportedData::select('file_name')
+    //         ->whereNotNull('file_name')
+    //         ->distinct()
+    //         ->pluck('file_name');
+
+    //     return view('pages.dashboard', compact('logs', 'kriteriaStats', 'rwStats', 'availableFiles', 'jumlahPenerima', 'jumlahBukan', 'fileStats'));
+    // }
+
     public function index(Request $request)
     {
         $logs = ActivityLog::with('user')
@@ -26,6 +58,17 @@ class DashboardController extends Controller
             ->pluck('total', 'kriteria');
 
         $rwStats = ImportedData::where('keterangan', 'penerima')
+            ->select('rw', DB::raw('count(*) as total'))
+            ->groupBy('rw')
+            ->pluck('total', 'rw');
+
+        // 🔥 Tambahan: Bukan Penerima
+        $kriteriaStatsBukan = ImportedData::where('keterangan', 'bukan_penerima')
+            ->select('kriteria', DB::raw('count(*) as total'))
+            ->groupBy('kriteria')
+            ->pluck('total', 'kriteria');
+
+        $rwStatsBukan = ImportedData::where('keterangan', 'bukan_penerima')
             ->select('rw', DB::raw('count(*) as total'))
             ->groupBy('rw')
             ->pluck('total', 'rw');
@@ -43,8 +86,19 @@ class DashboardController extends Controller
             ->distinct()
             ->pluck('file_name');
 
-        return view('pages.dashboard', compact('logs', 'kriteriaStats', 'rwStats', 'availableFiles', 'jumlahPenerima', 'jumlahBukan', 'fileStats'));
+        return view('pages.dashboard', compact(
+            'logs',
+            'kriteriaStats',
+            'rwStats',
+            'kriteriaStatsBukan',
+            'rwStatsBukan',
+            'availableFiles',
+            'jumlahPenerima',
+            'jumlahBukan',
+            'fileStats'
+        ));
     }
+
 
     public function exportPdf(Request $request)
     {

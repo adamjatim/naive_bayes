@@ -14,12 +14,21 @@ class PerformanceController extends Controller
         $percentage = (int) $request->get('percentage');
         $data = ImportedData::orderBy('id')->get();
 
-
         $total = $data->count();
         $totalData = $data->count();
-        // dd($total);
-        $trainCount = (int) round($total * ($percentage / 100));
-        $testCount = $total - $trainCount;
+
+        if ($total < 10) {
+            $trainCount = max($total - 1, 1);
+            $testCount = $total - $trainCount;
+        } else {
+            $trainCount = (int) round($total * ($percentage / 100));
+            $testCount = $total - $trainCount;
+
+            if ($testCount < 1) {
+                $trainCount = $total - 1;
+                $testCount = 1;
+            }
+        }
 
         $trainData = $data->take($trainCount);
         $initialTestData = ImportedData::orderBy('id')
@@ -40,15 +49,25 @@ class PerformanceController extends Controller
         ]);
     }
 
-
     public function calculate(Request $request)
     {
         $percentage = (int) $request->get('percentage');
         $data = ImportedData::orderBy('id')->get();
 
         $total = $data->count();
-        $trainCount = (int) round($total * ($percentage / 100));
-        $testCount = $total - $trainCount;
+
+        if ($total < 10) {
+            $trainCount = max($total - 1, 1);
+            $testCount = $total - $trainCount;
+        } else {
+            $trainCount = (int) round($total * ($percentage / 100));
+            $testCount = $total - $trainCount;
+
+            if ($testCount < 1) {
+                $trainCount = $total - 1;
+                $testCount = 1;
+            }
+        }
 
         $trainData = $data->take($trainCount);
         $testData = $data->slice($trainCount);
@@ -73,9 +92,9 @@ class PerformanceController extends Controller
         foreach ($features as $feature) {
             foreach ($labels as $label) {
                 $values = $trainData->where('keterangan', $label)->groupBy($feature)->map->count();
-                $total = $labelCounts[$label];
+                $totalLabel = $labelCounts[$label];
                 foreach ($values as $val => $count) {
-                    $condProb[$feature][$val][$label] = $count / $total;
+                    $condProb[$feature][$val][$label] = $count / $totalLabel;
                 }
             }
         }
@@ -114,6 +133,24 @@ class PerformanceController extends Controller
 
         $totalData = $data->count();
 
+        $warningMessage = null;
+
+        if ($total < 10) {
+            $trainCount = max($total - 1, 1);
+            $testCount = $total - $trainCount;
+            $warningMessage = "Data kurang dari 10. Training diisi {$trainCount} data, Testing {$testCount} data.";
+        } else {
+            $trainCount = (int) round($total * ($percentage / 100));
+            $testCount = $total - $trainCount;
+
+            if ($testCount < 1) {
+                $trainCount = $total - 1;
+                $testCount = 1;
+                $warningMessage = "Persentase {$percentage}% menyebabkan testing kosong. Training diisi {$trainCount} data, Testing {$testCount} data.";
+            }
+        }
+
+
         return view('pages.naive-bayes.performance', compact(
             'percentage',
             'trainData',
@@ -123,7 +160,8 @@ class PerformanceController extends Controller
             'testCount',
             'predictions',
             'accuracy',
-            'totalData'
+            'totalData',
+            'warningMessage'
         ));
     }
 
@@ -178,69 +216,68 @@ class PerformanceController extends Controller
     }
 
     public function lazyLoadProcess(Request $request)
-{
-    $percentage = $request->get('percentage');
-    $batch = (int) $request->get('batch', 1);
-    $perBatch = 100;
+    {
+        $percentage = $request->get('percentage');
+        $batch = (int) $request->get('batch', 1);
+        $perBatch = 100;
 
-    $data = ImportedData::orderBy('id')->get();
+        $data = ImportedData::orderBy('id')->get();
 
-    $total = $data->count();
-    $trainCount = (int) round($total * ($percentage / 100));
-    $testData = $data->slice($trainCount);
+        $total = $data->count();
+        $trainCount = (int) round($total * ($percentage / 100));
+        $testData = $data->slice($trainCount);
 
-    // Hitung prediksi seperti sebelumnya
-    $trainData = $data->take($trainCount);
-    $labelCounts = $trainData->groupBy('keterangan')->map->count();
-    $totalTrain = $trainData->count();
+        // Hitung prediksi seperti sebelumnya
+        $trainData = $data->take($trainCount);
+        $labelCounts = $trainData->groupBy('keterangan')->map->count();
+        $totalTrain = $trainData->count();
 
-    $labels = $labelCounts->keys();
-    $prior = [];
-    foreach ($labels as $label) {
-        $prior[$label] = $labelCounts[$label] / $totalTrain;
-    }
-
-    $features = array_keys($trainData->first()->getAttributes());
-    $features = array_diff($features, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at', 'keterangan']);
-
-    $condProb = [];
-    foreach ($features as $feature) {
+        $labels = $labelCounts->keys();
+        $prior = [];
         foreach ($labels as $label) {
-            $values = $trainData->where('keterangan', $label)->groupBy($feature)->map->count();
-            $total = $labelCounts[$label];
-
-            foreach ($values as $val => $count) {
-                $condProb[$feature][$val][$label] = $count / $total;
-            }
+            $prior[$label] = $labelCounts[$label] / $totalTrain;
         }
-    }
 
-    $start = ($batch - 1) * $perBatch;
-    $batchData = $testData->slice($start, $perBatch);
+        $features = array_keys($trainData->first()->getAttributes());
+        $features = array_diff($features, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at', 'keterangan']);
 
-    $predictions = [];
+        $condProb = [];
+        foreach ($features as $feature) {
+            foreach ($labels as $label) {
+                $values = $trainData->where('keterangan', $label)->groupBy($feature)->map->count();
+                $total = $labelCounts[$label];
 
-    foreach ($batchData as $row) {
-        $scores = [];
-        foreach ($labels as $label) {
-            $scores[$label] = $prior[$label];
-            foreach ($features as $feature) {
-                $val = $row->$feature;
-                $scores[$label] *= $condProb[$feature][$val][$label] ?? (1 / ($labelCounts[$label] + 1));
+                foreach ($values as $val => $count) {
+                    $condProb[$feature][$val][$label] = $count / $total;
+                }
             }
         }
 
-        $predicted = array_keys($scores, max($scores))[0];
-        $actual = $row->keterangan;
+        $start = ($batch - 1) * $perBatch;
+        $batchData = $testData->slice($start, $perBatch);
 
-        $predictions[] = [
-            'data' => array_values(array_diff_key($row->getAttributes(), array_flip(['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))),
-            'predicted' => $predicted,
-            'correct' => $predicted === $actual,
-        ];
+        $predictions = [];
+
+        foreach ($batchData as $row) {
+            $scores = [];
+            foreach ($labels as $label) {
+                $scores[$label] = $prior[$label];
+                foreach ($features as $feature) {
+                    $val = $row->$feature;
+                    $scores[$label] *= $condProb[$feature][$val][$label] ?? (1 / ($labelCounts[$label] + 1));
+                }
+            }
+
+            $predicted = array_keys($scores, max($scores))[0];
+            $actual = $row->keterangan;
+
+            $predictions[] = [
+                'data' => array_values(array_diff_key($row->getAttributes(), array_flip(['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))),
+                'predicted' => $predicted,
+                'correct' => $predicted === $actual,
+            ];
+        }
+
+        return response()->json($predictions);
     }
-
-    return response()->json($predictions);
-}
-
 }
