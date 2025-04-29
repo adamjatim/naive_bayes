@@ -41,7 +41,7 @@
                             @endfor
                         </select>
                         <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                            Export PDF
+                            Export Excel
                         </button>
                     </form>
 
