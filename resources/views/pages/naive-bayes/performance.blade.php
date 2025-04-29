@@ -2,7 +2,26 @@
 
 @section('title', 'Performance')
 
+@section('styles')
+    <style>
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
 
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+
+@endsection
 
 @section('content')
     <header class="bg-white shadow">
@@ -30,6 +49,20 @@
                 </select>
             </form>
         </div>
+
+        @if (!empty($warningMessage))
+            <div id="warning-box"
+                class="flex items-center p-4 m-4 mb-6 text-yellow-800 bg-yellow-100 border border-yellow-300 rounded-lg shadow animate-fade-in transition-all duration-500">
+                <svg class="w-6 h-6 mr-2 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.675-1.36 3.44 0l6.518 11.592c.75 1.336-.213 3.009-1.72 3.009H3.46c-1.507 0-2.47-1.673-1.72-3.009L8.257 3.1zM11 14a1 1 0 10-2 0 1 1 0 002 0zm-.25-5a.75.75 0 00-1.5 0v3a.75.75 0 001.5 0V9z"
+                        clip-rule="evenodd" />
+                </svg>
+                <div class="text-sm">
+                    <span class="font-semibold">Perhatian:</span> {{ $warningMessage }}
+                </div>
+            </div>
+        @endif
 
         @if ($percentage)
             <!-- Tabel Data Training -->
@@ -135,7 +168,9 @@
                             <tr>
                                 @foreach ($row['data']->getAttributes() as $key => $val)
                                     @if (!in_array($key, ['id', 'user_id', 'file_name', 'file_size', 'created_at', 'updated_at']))
-                                        <td class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">{{ $val }}</td>
+                                        <td
+                                            class="px-4 py-2 text-sm text-gray-700 @if (strpos($val, 'RW') !== false) whitespace-nowrap @endif">
+                                            {{ $val }}</td>
                                     @endif
                                 @endforeach
                                 <td

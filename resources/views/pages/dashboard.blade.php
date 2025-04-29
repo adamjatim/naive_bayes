@@ -49,30 +49,54 @@
             </div>
 
             {{-- STATISTIK --}}
-            <div class="space-y-6">
-                <h2 class="text-2xl font-semibold text-gray-800">Statistik Penerima Bantuan</h2>
-
-                <div class="flex overflow-x-scroll gap-6" style="-ms-overflow-style: none; scrollbar-width: none;"
-                    id="chartContainer">
-                    @php
-                        $charts = [
-                            ['id' => 'chartKategori', 'title' => 'Penerima per Kategori'],
-                            ['id' => 'chartRW', 'title' => 'Penerima per RW'],
-                            ['id' => 'chartPerbandingan', 'title' => 'Perbandingan Penerima vs Bukan'],
-                            ['id' => 'chartPerFile', 'title' => 'Jumlah Data Berdasarkan File'],
-                        ];
-                    @endphp
-
-                    @foreach ($charts as $chart)
-                        <div class="min-w-[350px] w-[40%] bg-white p-6 rounded-xl border transform transition-all duration-300 cursor-pointer chart-card"
-                            onclick="focusChart(this)">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-2">{{ $chart['title'] }}</h3>
-                            <canvas id="{{ $chart['id'] }}"></canvas>
+            <div class="w-full flex flex-row gap-6 px-6 py-8 h-fit">
+                {{-- BAGIAN KIRI --}}
+                <div class="w-3/4 flex flex-col gap-6 justify-between">
+                    <div class="flex flex-row">
+                        {{-- Penerima per Kategori --}}
+                        <div class="bg-white p-6 rounded-xl shadow w-[550px] h-[330px] mx-auto">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Penerima per Kategori</h3>
+                            <canvas id="chartKategoriPenerima"></canvas>
                         </div>
-                    @endforeach
+
+                        {{-- Bukan Penerima per Kategori --}}
+                        <div class="bg-white p-6 rounded-xl shadow w-[550px] h-[330px] mx-auto">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Bukan Penerima per Kategori</h3>
+                            <canvas id="chartKategoriBukan"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row">
+                        {{-- Penerima per RW --}}
+                        <div class="bg-white p-6 rounded-xl shadow w-[550px] h-[330px] mx-auto">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Penerima per RW</h3>
+                            <canvas id="chartRWPenerima"></canvas>
+                        </div>
+
+                        {{-- Bukan Penerima per RW --}}
+                        <div class="bg-white p-6 rounded-xl shadow w-[550px] h-[330px] mx-auto">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Bukan Penerima per RW</h3>
+                            <canvas id="chartRWBukan"></canvas>
+                        </div>
+                    </div>
                 </div>
 
+                {{-- BAGIAN KANAN --}}
+                <div class="w-1/4 flex flex-col gap-6">
+                    {{-- Perbandingan Penerima vs Bukan --}}
+                    <div class="bg-white p-6 rounded-xl shadow">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Perbandingan Penerima vs Bukan</h3>
+                        <canvas id="chartPerbandingan" class="!w-[248px] !h-auto mx-auto"></canvas>
+                    </div>
+
+                    {{-- Jumlah Data Berdasarkan File --}}
+                    <div class="bg-white p-6 rounded-xl shadow h-[330px]">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Jumlah Data Berdasarkan File</h3>
+                        <canvas id="chartPerFile" class="!w-full !h-[260px]"></canvas>
+                    </div>
+                </div>
             </div>
+
 
         </div>
     @else
@@ -86,71 +110,146 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const chartData = {
-            chartKategori: {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode(array_keys($kriteriaStats->toArray())) !!},
-                    datasets: [{
-                        label: 'Jumlah Penerima',
-                        data: {!! json_encode(array_values($kriteriaStats->toArray())) !!},
-                        backgroundColor: '#3B82F6'
-                    }]
-                }
+        // Chart: Penerima per Kategori
+        new Chart(document.getElementById('chartKategoriPenerima'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode(array_keys($kriteriaStats->toArray())) !!},
+                datasets: [{
+                    label: 'Penerima',
+                    data: {!! json_encode(array_values($kriteriaStats->toArray())) !!},
+                    backgroundColor: '#3B82F6'
+                }]
             },
-            chartRW: {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode(array_keys($rwStats->toArray())) !!},
-                    datasets: [{
-                        label: 'Jumlah Penerima',
-                        data: {!! json_encode(array_values($rwStats->toArray())) !!},
-                        backgroundColor: '#10B981'
-                    }]
-                }
-            },
-            chartPerbandingan: {
-                type: 'doughnut',
-                data: {
-                    labels: ['Penerima', 'Bukan Penerima'],
-                    datasets: [{
-                        data: [{{ $jumlahPenerima }}, {{ $jumlahBukan }}],
-                        backgroundColor: ['#6366F1', '#F59E0B']
-                    }]
-                }
-            },
-            chartPerFile: {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode(array_keys($fileStats->toArray())) !!},
-                    datasets: [{
-                        label: 'Total Data',
-                        data: {!! json_encode(array_values($fileStats->toArray())) !!},
-                        backgroundColor: '#EF4444'
-                    }]
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        };
-
-        Object.entries(chartData).forEach(([id, config]) => {
-            new Chart(document.getElementById(id), config);
         });
 
-        // function focusChart(card) {
-        //     document.querySelectorAll('.chart-card').forEach(el => {
-        //         el.classList.remove('scale-105', 'z-20');
-        //         el.classList.add('opacity-60');
-        //     });
-        //     card.classList.remove('opacity-60');
-        //     card.classList.add('scale-105', 'z-20');
-        // }
+        // Chart: Bukan Penerima per Kategori
+        new Chart(document.getElementById('chartKategoriBukan'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode(array_keys($kriteriaStatsBukan->toArray())) !!},
+                datasets: [{
+                    label: 'Bukan Penerima',
+                    data: {!! json_encode(array_values($kriteriaStatsBukan->toArray())) !!},
+                    backgroundColor: '#F87171'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
 
-        function scrollCharts(direction) {
-            const container = document.getElementById('chartContainer');
-            container.scrollBy({
-                left: 400 * direction,
-                behavior: 'smooth'
-            });
-        }
+        // Chart: Penerima per RW
+        new Chart(document.getElementById('chartRWPenerima'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode(array_keys($rwStats->toArray())) !!},
+                datasets: [{
+                    label: 'Penerima',
+                    data: {!! json_encode(array_values($rwStats->toArray())) !!},
+                    backgroundColor: '#10B981'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Chart: Bukan Penerima per RW
+        new Chart(document.getElementById('chartRWBukan'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode(array_keys($rwStatsBukan->toArray())) !!},
+                datasets: [{
+                    label: 'Bukan Penerima',
+                    data: {!! json_encode(array_values($rwStatsBukan->toArray())) !!},
+                    backgroundColor: '#F59E0B'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Chart: Perbandingan Penerima vs Bukan
+        new Chart(document.getElementById('chartPerbandingan'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Penerima', 'Bukan Penerima'],
+                datasets: [{
+                    data: [{{ $jumlahPenerima }}, {{ $jumlahBukan }}],
+                    backgroundColor: ['#6366F1', '#F59E0B']
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        new Chart(document.getElementById('chartPerFile'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode(
+                    array_map(function ($label) {
+                        $string = $label;
+                        $pieces = explode(' ', $string);
+                        $last_word = array_pop($pieces);
+                        return strlen($label) > 10 ? $last_word : $label;
+                    }, array_keys($fileStats->toArray())),
+                ) !!},
+                datasets: [{
+                    label: 'Jumlah Data',
+                    data: {!! json_encode(array_values($fileStats->toArray())) !!},
+                    backgroundColor: '#EF4444'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const fullLabels = {!! json_encode(array_keys($fileStats->toArray())) !!};
+                            const index = tooltipItems[0].dataIndex;
+                            return fullLabels[index];
+                        }
+                    }
+                }
+            }
+        });
     </script>
+
 @endsection
